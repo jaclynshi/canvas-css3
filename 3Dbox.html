@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3dBox</title>
+    <style>
+        .wrap{
+            width: 260px;
+            height: 260px;
+            margin: 128px auto;
+            perspective: 1000px;
+        }
+
+        .cube{
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            position: relative;
+            animation: spin 5s ease-in-out;
+        }
+
+        .cube>div{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, .8);
+            text-align: center;
+            line-height: 260px;
+            color: #fff;
+			font-size: 48px;
+			border: 2px solid #fff;
+            user-select: none;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotateX(0) rotateY(0) rotateZ(0);
+            }
+            100% {
+                transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+            }
+        }
+
+        .front{
+            transform: translateZ(130px);
+        }
+
+        .end{
+            transform: rotateX(180deg) translateZ(130px);
+        }
+
+        .left{
+            transform: rotateY(-90deg) translateZ(130px);
+        }
+
+        .right{
+            transform: rotateY(90deg) translateZ(130px);
+        }
+
+        .top{
+            transform: rotateX(90deg) translateZ(130px);
+        }
+
+        .bottom{
+            transform: rotateX(-90deg) translateZ(130px);
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="cube">
+            <div class="front">Front</div>
+            <div class="end">End</div>
+            <div class="left">Left</div>
+            <div class="right">Right</div>
+            <div class="top">Top</div>
+            <div class="bottom">Bottom</div>
+        </div>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            let cube = document.querySelector('.cube'),
+                downX, downY, moveX, moveY, tempX, tempY, degX = 0, degY = 0;
+            window.onmousedown = function(e) {
+                e = e || event;
+                downX = e.clientX;
+                downY = e.clientY;
+
+                window.onmousemove = function(e) {
+                    e = e || event;
+                    moveX = e.clientX - downX;
+                    moveY = e.clientY - downY;
+
+                    tempX = degX + moveX / 5;
+                    tempY = degY - moveY / 5;
+
+                    cube.style.transform = 'rotateX(' + tempY + 'deg) rotateY(' + tempX + 'deg)';
+                }
+            }
+
+            window.onmouseup = function(e) {
+                e = e || event;
+                degX += moveX / 5;
+                degY += - moveY / 5;
+                window.onmousemove = null;
+            }
+
+            !function() {
+                let n = 1000;
+                let wrap = document.querySelector('wrap');
+                wrap.style.perspective = n + 'px';
+                window.onmousewheel = function(e) {
+                    e = e || event;
+                    if(e.wheelDelta) {
+                        if(e.wheelDelta > 0) {
+                            wrap.style.perspective = n - 50 + 'px';
+                            if(n > 350) {
+                                n = n - 50;
+                            }
+                        }
+                        if(e.wheelDelta < 0) {
+                            wrap.style.perspective = n + 50 + 'px';
+                            n += 50;
+                        }
+                    }
+                }
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ball</title>
+</head>
+<body>
+    <canvas id="ball" width="500" height="500" style="border: 1px solid"></canvas>
+
+    <script>
+        const canvas = document.querySelector('#ball');
+        const ctx = canvas.getContext('2d');
+        const { width, height } = canvas;
+        canvas.addEventListener('click', function(e) {
+            e = e || event;
+            const ball = new Ball(e.offsetX, e.offsetY);
+            ball.draw();
+            ball.fall();
+        })
+
+        class Ball {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                const [vx, vy] = randomDirector();
+                this.vx = vx;
+                this.vy = vy;
+                this.radius = 20;
+                this.maxX = width - this.radius;
+                this.maxY = height - this.radius;
+                this.color = randomColor();
+            }
+
+            draw() {
+                drawCircle(this.x, this.y, this.radius, this.color);
+            }
+
+            fall() {
+                window.requestAnimationFrame(() => {
+                    this.vy += 1.5; 
+                    const dx = this.x + this.vx;
+                    const dy = this.y + this.vy;
+                    this.x = dx;
+                    this.y = dy;
+
+                    if(dx > this.maxX || dx < this.radius) this.vx = -this.vx;
+                    if((dy >= this.maxY && this.vy > 0) || (dy < this.radius && this.vy < 0)) {
+                        if(Math.abs(this.vy) <= 1.5) return;
+                        this.vy = -this.vy;
+                    } 
+
+                    drawCircle(this.x, this.y, this.radius, this.color);
+                    this.fall();
+                })
+            }
+        }
+
+        const drawCircle = (x, y, r, color) => {
+            ctx.clearRect(0,0,width,height);
+            ctx.beginPath();
+            ctx.fillStyle = color;
+            ctx.arc(x, y, r, 0, 360 * (Math.PI / 180));
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        const randomColor = () => {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            return `rgb(${r},${g},${b})`;
+        }
+
+        const randomDirector = () => {
+            const vx = Math.floor(Math.random() * 20) - 10;
+            const vy = Math.floor(Math.random() * 5) - 10;
+            return [vx, vy];
+        }
+    </script>
+</body>
+</html>
